@@ -6,15 +6,16 @@ module TableMoth
     options[:first_row] = true
     row_number = (1+collection.size/row_length)
 
-    content_tag :table, {:class => "#{css_class.pluralize} gridlayout"} do
+    content = content_tag :table, {:class => "#{css_class.pluralize} gridlayout"} do
       rows = []
       row_number.times do |row|
         row_collection = collection[row*row_length,row_length]
-        rows << yield(row_collection, options)
+        rows << capture(row_collection, options, &block)
         options[:first_row] = false
       end
       rows.join
     end
+    block_is_within_action_view?(block) ? concat(content, block.binding) : content
   end
 
   def rowize(row_collection, options, &block)
@@ -23,10 +24,10 @@ module TableMoth
     html_options = {:width => "#{width}%", :class => css_class, :valign => "middle"}
     html_options[:style] = options[:style] if options[:style]
 
-    content_tag :tr do
+    content = content_tag :tr do
       full = row_collection.collect do |item|
         content_tag :td, html_options do
-          yield item
+          capture(item, &block)
         end
       end
 
@@ -39,6 +40,7 @@ module TableMoth
 
       full.join
     end
+    block_is_within_action_view?(block) ? concat(content, block.binding) : content
   end
 
 end

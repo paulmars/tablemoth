@@ -1,6 +1,8 @@
 module TableMoth
 
   def tablurize(collection, options = {}, &block)
+    return nil if collection.empty?
+
     row_length = (options[:row_length] ||= 4)
     css_class = (options[:css_class] ||= collection.first.class.to_s.downcase)
     options[:first_row] = true
